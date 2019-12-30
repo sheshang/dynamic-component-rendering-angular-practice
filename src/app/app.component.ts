@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {HeroesService} from './heroes/heroes.service';
 
 @Component({
@@ -8,16 +8,20 @@ import {HeroesService} from './heroes/heroes.service';
     <ngx-tabs>
       <ngx-tab tabTitle="Hero List">
         <h1>Hero List</h1>
-        <app-heroes-list [heroes]="heroes"></app-heroes-list>
+        <app-heroes-list [heroes]="heroes" (addPerson) = "onAddPerson()"></app-heroes-list>
       </ngx-tab>
-      <ngx-tab tabTitle="Hero">
+      <ngx-tab tabTitle="Hero" [template]="hello" [dataContext]="heroes[0]">
         <h1>Hero</h1>
       </ngx-tab>
     </ngx-tabs>
-
+    <ng-template #hello let-hero="data">
+    Hello, {{hero?.name}}!
+    </ng-template>
   `,
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
+  
+  @ViewChild('hello') helloTemplate;
   heroes;
 
   constructor(private heroesService: HeroesService) {}
@@ -27,4 +31,14 @@ export class AppComponent implements OnInit {
       this.heroes = data;
     });
   }
+
+  ngAfterViewInit() {
+    console.log(this.helloTemplate);
+  }
+
+  
+  onAddPerson(){
+    this.tabsComponent.openTab();
+  }
+
 }
